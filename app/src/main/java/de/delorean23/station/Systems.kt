@@ -36,7 +36,7 @@ object Systems {
         GameSystem("sufami", "SuFami Turbo", "Bandai", 1996,
             listOf("st", "smc", "sfc") + cartExt, listOf("snes9x"), zipNative = true),
         GameSystem("n64", "Nintendo 64", "Nintendo", 1996,
-            listOf("z64", "n64", "v64") + cartExt, listOf("mupen64plus_next", "parallel_n64"), zipNative = true),
+            listOf("z64", "n64", "v64") + cartExt, listOf("mupen64plus_next_gles3", "mupen64plus_next", "parallel_n64"), zipNative = true),
         GameSystem("gb", "Game Boy", "Nintendo", 1989,
             listOf("gb") + cartExt, listOf("gambatte", "mgba"), zipNative = true, hardware = "portable"),
         GameSystem("gbc", "Game Boy Color", "Nintendo", 1998,

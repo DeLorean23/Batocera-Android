@@ -5,7 +5,7 @@
 fceumm both
 nestopia both
 snes9x both
-mupen64plus_next both
+mupen64plus_next_gles3 both
 parallel_n64 both
 gambatte both
 mgba both
