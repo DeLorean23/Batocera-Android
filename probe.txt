@@ -1,0 +1,415 @@
+== batocera.db: 200 21173
+== batocera.db.tar.gz: 200 21173
+== batocera.files: 200 740842
+batocera.db: gzip compressed data, last modified: Sat Oct 10 14:55:34 2026, from Unix, original size modulo 2^32 164864
+NightSlashersXWideAsh_24A-2024.10.17-1
+atari2600-amoeba-jump-1.4.0-1
+atari2600-halo2600-1.0.0-1
+bezel-helmet-cropped-1.0.0-1
+bezel-mroverlay-bichromatic-logos-1.0.0-1
+bezel-mroverlay-bichromatic-logos-large-handhelds-1.0.0-1
+bezel-mroverlay-bichromatic-no-logos-1.0.0-1
+bezel-mroverlay-bichromatic-no-logos-large-handhelds-1.0.0-1
+bezel-mroverlay-game-boxarts-1.0.0-1
+bezel-mroverlay-minimalic-1.0.0-1
+bezel-mroverlay-side-logos-1.0.0-1
+bezels-default-glazed-1.0.1-1
+bezels-koko-aio-immersive-1.6.4-1
+c64-laser-eagle-2.0.0-3
+c64-relentless-64-1.0.0-2
+dreamcast-volgarr-1.0.0-3
+easyrpg-ib-1.0.7-1
+easyrpg-witchsheart-1.2.7-2
+gb-dangan-1.0.0-3
+gb-into-the-blue-1.0.0-4
+gb-retroid-1.0.0-5
+gba-holyhell-1.0.0-3
+gba-luminesweeper-1.0.0-2
+gba-varooom-3d-7.3.0-1
+gbc-petris-1.0.0-1
+gbc-quartet-1.2.0-1
+gbc-ucity-1.2.0-1
+ikemen-famicom-fighters-1.0.1-1
+ikemen-kof-shining-go-1.0.3-1
+mega-bezel-community-1.0.0-7
+mega-bezel-community-v36-1.0.0-1
+mega-bezel-community-v36-ultralite-1.0.0-1
+mega-bezel-project-1.0.0-1
+megadrive-barbarian-1.0.0-1
+megadrive-miniplanets-1.0.3-1
+megadrive-omega-blast-0.9.0-1
+megadrive-uwol-1.0.0-1
+misc-bezels-classic-batocera-1.0.0-1
+misc-bezels-duimon-default-curve-1.0.1-1
+misc-bezels-duimon-default-curve-alt-vertical-1.0.1-1
+misc-bezels-duimon-default-curve-alt-vertical-night-1.0.1-1
+misc-bezels-duimon-default-curve-night-1.0.1-1
+misc-bezels-duimon-default-nocurve-1.0.1-1
+misc-bezels-duimon-default-nocurve-alt-vertical-1.0.1-1
+misc-bezels-duimon-default-nocurve-alt-vertical-night-1.0.1-1
+misc-bezels-duimon-default-nocurve-night-1.0.1-1
+misc-libretro-cheats-1.10.3-1
+misc-midi-soundfont-arachno-1.0.0-1
+music-omshaie-vol-1-1.0.0-1
+music-pack-vol-2-1.0.0-1
+music-pack-vol-3-1.0.0-1
+music-pack-vol-4-1.0.0-1
+n64recomp-launcher-1.64.0-1
+nds-megaetk-1.0.3-1
+nes-alter-ego-1.0.0-6
+nes-blade-buster-1.0.0-2
+nes-legends-of-owlia-1.0.0-5
+nes-ninja-4-seasons-1.1.0-1
+nes-nova-the-squirrel-1.0.0-2
+nes-super-tilt-bro-2.0.8-1
+openbor-Streets_of_Rage_2X-1.0.0-3
+openbor-goldenaxe-myth-1.0.0-4
+openbor-gudule-1.0.0-4
+openbor-he-man-2.1.0-1
+pcengine-tonguemans-logic-1.0.0-2
+ports-abuse-1.0.0-1
+ports-cdogs-1.5.0-2
+ports-hcl-1.0.0-2
+ports-hurrican-1.0.1-1
+ports-nox-retro-games-snake-1.26.0-1
+ports-quake-shareware-1.0.0-4
+ports-superbroswar-1.8.0-1
+ports-supertuxkart-1.2-1
+ports-tfe-Operation-Kyber-Crystal-1.0.6-1
+ports-tyrian-1.0.0-1
+ports-unvanquished-0.52.0-1
+ports-veloren-2022.04.24-1
+ports-xrick-1.0.0-1
+ports-zerok-1.9.4.1-3
+psp-ppsspp-cheats-1.0.0-2
+psp-silveredge-1.1.0-1
+psp-wagic-1.0.0-1
+pygame-retrotrivia-1.1.0-1
+saturn-cubecat-0.010322.0-1
+saturn-hellslave-0.361.0-1
+scummvm-beneath-a-steel-sky-1.0.0-3
+scummvm-flight-of-the-amazon-queen-1.0.0-3
+snes-super-boss-gaiden-1.2.0-1
+solarus-osanas-revenge-1.1.0-1
+solarus-the-legend-of-zelda-book-of-mudora-1.4.0-1
+solarus-the-legend-of-zelda-mystery-of-solarus-dx-1.12.3-1
+solarus-the-legend-of-zelda-mystery-of-solarus-xd-1.12.2-1
+solarus-the-legend-of-zelda-return-of-the-hylian-se-1.2.1-1
+solarus-the-legend-of-zelda-xd2-mercuris-chess-1.1.2-1
+solarus-tunics-0.3.0-1
+solarus-yarntown-1.0.6-1
+tic80-8bit-panda-1.0.0-2
+tic80-secret-agents-1.0.0-1
+tic80-todor-1.0.0-1
+vpxtool-1.0.0-1
+wine-EvilDeadRedux-2024.10.08-2
+wine-rili-2.0.1-5
+wine-tmnt-rescue-palooza-1.15-2024.04.12-1
+wine-tuxracer-0.61.1-5
+wine-xmoto-0.6.1-3
+zaparoo-core-2.20.0-1
+== COUNT 106
+#### NightSlashersXWideAsh_24A-2024.10.17-1
+%FILENAME%
+wine-NightSlashersXWideAsh_24A-2024.10.17-1-any.pkg.tar.zst
+
+%NAME%
+NightSlashersXWideAsh_24A
+
+%VERSION%
+2024.10.17-1
+
+%DESC%
+Night Slashers X Wide-Screen - A 4 player beat-them-up by BonusJZ, updated by Oldyz, Toranks, Life of Finale and the OpenBOR society
+
+%GROUPS%
+sys-windows
+
+%CSIZE%
+501865450
+
+%ISIZE%
+593362944
+
+%MD5SUM%
+3a2de726f5be650ff62589c73927d692
+
+%SHA256SUM%
+93faf2f2997f8650f79c50bcf2c228faac75581f1566e904b9cd699e7a37fa68
+
+%URL%
+https://web.archive.org/web/20250829001318/https://www.chronocrash.com/forum/threads/night-slashers-x-variants-help-the-ai-wants-to-me-edition.4206/
+
+%ARCH%
+any
+
+%BUILDDATE%
+1756958675
+
+%PACKAGER%
+Oldyz
+
+#### atari2600-amoeba-jump-1.4.0-1
+%FILENAME%
+atari2600-amoeba-jump-1.4.0-1-any.pkg.tar.zst
+
+%NAME%
+atari2600-amoeba-jump
+
+%VERSION%
+1.4.0-1
+
+%DESC%
+Amoeba Jump - Infinite Jumper with RetroAchievements
+
+%GROUPS%
+sys-atari2600
+
+%CSIZE%
+52857
+
+%ISIZE%
+114688
+
+%MD5SUM%
+9c278d2c00a657f67e6e04afe6a69d3c
+
+%SHA256SUM%
+403e4416cc225feefecbb3a70168965b94a6e65da20214f91dd6fb8dd7719baa
+
+%URL%
+https://atariage.com/forums/topic/280211-amoeba-jump/
+
+%ARCH%
+any
+
+%BUILDDATE%
+1616795029
+
+%PACKAGER%
+lbrpdx
+
+#### atari2600-halo2600-1.0.0-1
+%FILENAME%
+atari2600-halo2600-1.0.0-1-any.pkg.tar.zst
+
+%NAME%
+atari2600-halo2600
+
+%VERSION%
+1.0.0-1
+
+%DESC%
+Retro-style Halo, in 4KB with retroachievements
+
+%GROUPS%
+sys-atari2600
+
+%CSIZE%
+47872
+
+%ISIZE%
+90112
+
+%MD5SUM%
+df850559df7279988e17e7c55545ce7e
+
+%SHA256SUM%
+7df90015222d2dc57f45e522539ee20e91dc980270f83edf8c6438005461fe80
+
+%URL%
+https://atariage.com/forums/topic/166916-halo-for-the-2600-released-at-cge-download-the-game-here/
+
+%ARCH%
+any
+
+%BUILDDATE%
+1621023933
+
+%PACKAGER%
+lbrpdx
+
+#### bezel-helmet-cropped-1.0.0-1
+%FILENAME%
+bezel-helmet-cropped-1.0.0-1-any.pkg.tar.zst
+
+%NAME%
+bezel-helmet-cropped
+
+%VERSION%
+1.0.0-1
+
+%DESC%
+Hel Mic's Helmet bezel, slightly cropped.
+
+%GROUPS%
+bezel
+
+%CSIZE%
+1312064
+
+%ISIZE%
+1339392
+
+%MD5SUM%
+09e44d06d834bd18667d3745605b4589
+
+%SHA256SUM%
+92ba59695c8a06b70ffb88768d73b03cc39df42d5049c8c89a56c6f9debeb6b9
+
+%URL%
+https://drive.google.com/file/d/1Ul3UdboesplpySmYJHwsQEGv1VGmhBho/view
+
+%ARCH%
+any
+
+%BUILDDATE%
+1649558813
+
+%PACKAGER%
+Atari
+
+#### bezel-mroverlay-bichromatic-logos-1.0.0-1
+%FILENAME%
+bezel-mroverlay-bichromatic-logos-1.0.0-1-any.pkg.tar.zst
+
+%NAME%
+bezel-mroverlay-bichromatic-logos
+
+%VERSION%
+1.0.0-1
+
+%DESC%
+MrOverlay Bichromatic (Logos)
+
+%GROUPS%
+bezel
+
+%CSIZE%
+4719076
+
+%ISIZE%
+5611520
+
+%MD5SUM%
+de0ef0ad7d881a635bdc5d84ea85d32c
+
+%SHA256SUM%
+4dc14c64a0455159969db4d179835bc9d676ee97fd56127b0bca3d292431be8b
+
+%URL%
+https://github.com/DarrenCarol/MrOverlay
+
+%ARCH%
+any
+
+%BUILDDATE%
+1654405760
+
+%PACKAGER%
+Atari
+
+#### bezel-mroverlay-bichromatic-logos-large-handhelds-1.0.0-1
+%FILENAME%
+bezel-mroverlay-bichromatic-logos-large-handhelds-1.0.0-1-any.pkg.tar.zst
+
+%NAME%
+bezel-mroverlay-bichromatic-logos-large-handhelds
+
+%VERSION%
+1.0.0-1
+
+%DESC%
+MrOverlay Bichromatic (Logos, Large Screen Handhelds)
+
+%GROUPS%
+bezel
+
+%CSIZE%
+4600070
+
+%ISIZE%
+5500928
+
+%MD5SUM%
+aaee583807b13acca721f03b06e97e47
+
+%SHA256SUM%
+f7ed5f6a76ec80f20f7cff426dc11dc340edca2ba9145c23550929d17adef2d6
+
+%URL%
+https://github.com/DarrenCarol/MrOverlay
+
+%ARCH%
+any
+
+%BUILDDATE%
+1654406628
+
+%PACKAGER%
+Atari
+
+== GROUPS
+     23 bezel
+      2 misc
+      4 music
+      4 ports
+      2 sys
+      2 sys-atari2600
+      2 sys-c64
+      1 sys-dreamcast
+      2 sys-easyrpg
+      3 sys-gb
+      3 sys-gba
+      3 sys-gbc
+      2 sys-ikemen
+      4 sys-megadrive
+      1 sys-nds
+      6 sys-nes
+      4 sys-openbor
+      1 sys-pcengine
+     11 sys-ports
+      3 sys-psp
+      1 sys-pygame
+      2 sys-saturn
+      2 sys-scummvm
+      1 sys-snes
+      8 sys-solarus
+      3 sys-tic80
+      6 sys-windows
+== ARCH
+     94 any
+     12 x86_64
+== OPENBOR core
+404
+== SAMPLE wine-NightSlashersXWideAsh_24A-2024.10.17-1-any.pkg.tar.zst
+pkg: Zstandard compressed data (v0.8+), Dictionary ID: None
+.PKGINFO
+.BATOEXEC
+userdata/
+userdata/roms/
+userdata/roms/windows/
+userdata/roms/windows/videos/
+userdata/roms/windows/videos/NightSlashersX2024A.mp4
+userdata/roms/windows/images/
+userdata/roms/windows/images/NightSlashersX2024A.png
+userdata/roms/windows/NightSlashersX2024A.wine/
+userdata/roms/windows/NightSlashersX2024A.wine/autorun.cmd
+userdata/roms/windows/NightSlashersX2024A.wine/paks/
+userdata/roms/windows/NightSlashersX2024A.wine/paks/NightSlashersXWideAsh_24A.pak
+userdata/roms/windows/NightSlashersX2024A.wine/Saves/
+userdata/roms/windows/NightSlashersX2024A.wine/Saves/NightSlashersXWideAsh_24A.hi
+userdata/roms/windows/NightSlashersX2024A.wine/Saves/NightSlashersXWideAsh_24A.s00
+userdata/roms/windows/NightSlashersX2024A.wine/Saves/NightSlashersXWideAsh_24A.sav
+userdata/roms/windows/NightSlashersX2024A.wine/Saves/NightSlashersXWideAsh_24A.cfg
+userdata/roms/windows/NightSlashersX2024A.wine/Logs/
+userdata/roms/windows/NightSlashersX2024A.wine/Logs/moves by Toranks.txt
+userdata/roms/windows/NightSlashersX2024A.wine/Logs/ScriptLog.txt
+userdata/roms/windows/NightSlashersX2024A.wine/Logs/OpenBorLog.txt
+userdata/roms/windows/NightSlashersX2024A.wine/ScreenShots/
+userdata/roms/windows/NightSlashersX2024A.wine/NightSlashersXWideAsh_24A.exe
+userdata/roms/windows/NightSlashersX2024A.wine/Greetings from Oldyz.txt
+userdata/system/
+userdata/system/pacman/
+userdata/system/pacman/batoexec/
+userdata/system/pacman/batoexec/NightSlashersXWideAsh_24A_0
