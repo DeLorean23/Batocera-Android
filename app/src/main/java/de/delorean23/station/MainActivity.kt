@@ -78,6 +78,7 @@ class MainActivity : AppCompatActivity(), FrontendView.Listener, InputManager.In
         hideSystemUi()
         launching = false
         updatePad()
+        view.swapAB = cfg.swapAB
         view.systemView = cfg.systemView
         view.gameView = cfg.gameView
         if (!hasStorage()) { askStorage(); return }
@@ -467,8 +468,8 @@ class MainActivity : AppCompatActivity(), FrontendView.Listener, InputManager.In
 
     /** Gemeinsame Steuerung für Touch und Controller (Standard-Tasten = Xbox-Positionen) */
     private fun handleNav(code: Int, down: Boolean) {
-        val confirm = if (cfg.swapAB) KeyEvent.KEYCODE_BUTTON_A else KeyEvent.KEYCODE_BUTTON_B
-        val cancel = if (cfg.swapAB) KeyEvent.KEYCODE_BUTTON_B else KeyEvent.KEYCODE_BUTTON_A
+        val confirm = Ui.confirmKey(cfg)
+        val cancel = Ui.cancelKey(cfg)
         if (!down) {
             if (code in listOf(KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_LEFT,
                     KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_BUTTON_L2, KeyEvent.KEYCODE_BUTTON_R2)) stopRepeat()
@@ -494,13 +495,8 @@ class MainActivity : AppCompatActivity(), FrontendView.Listener, InputManager.In
 
     private val padListener = object : TouchPadView.Listener {
         override fun onKey(key: Int, pressed: Boolean) {
-            // Touch-Layout der Oberfläche liefert Libretro-Codes: A rechts = BUTTON_A, B unten = BUTTON_B
-            val std = when (key) {
-                KeyEvent.KEYCODE_BUTTON_A -> KeyEvent.KEYCODE_BUTTON_B   // "B" rechts = Bestätigen
-                KeyEvent.KEYCODE_BUTTON_B -> KeyEvent.KEYCODE_BUTTON_A   // "A" unten = Zurück
-                else -> key
-            }
-            handleNav(std, pressed)
+            // Touch-Layout der Oberfläche liefert Xbox-Positionen (A unten, B rechts)
+            handleNav(key, pressed)
         }
 
         override fun onStick(left: Boolean, x: Float, y: Float) {}

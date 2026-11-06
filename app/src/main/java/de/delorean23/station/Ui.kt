@@ -16,12 +16,16 @@ import androidx.appcompat.app.AlertDialog
 /** Dialoge, die sich mit Controller und Touch bedienen lassen. */
 object Ui {
 
+    /** A (unten) bestätigt, B (rechts) zurück – getauscht = Batocera-Belegung */
+    fun confirmKey(cfg: Config) = if (cfg.swapAB) KeyEvent.KEYCODE_BUTTON_B else KeyEvent.KEYCODE_BUTTON_A
+    fun cancelKey(cfg: Config) = if (cfg.swapAB) KeyEvent.KEYCODE_BUTTON_A else KeyEvent.KEYCODE_BUTTON_B
+
     /** Bestätigen/Zurück mit Controller-Tasten (Batocera-Belegung) */
     fun gamepad(dialog: AlertDialog, cfg: Config): AlertDialog {
         dialog.setOnKeyListener { d, code, ev ->
             if (ev.action != KeyEvent.ACTION_DOWN) return@setOnKeyListener false
-            val confirm = if (cfg.swapAB) KeyEvent.KEYCODE_BUTTON_A else KeyEvent.KEYCODE_BUTTON_B
-            val cancel = if (cfg.swapAB) KeyEvent.KEYCODE_BUTTON_B else KeyEvent.KEYCODE_BUTTON_A
+            val confirm = confirmKey(cfg)
+            val cancel = cancelKey(cfg)
             when (code) {
                 confirm -> {
                     val focus = dialog.currentFocus

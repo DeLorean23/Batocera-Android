@@ -86,14 +86,17 @@ object PadLayouts {
         if (withSticks) listOf(stickLeft, stickRightSmall) else emptyList()
     )
 
-    /** Oberfläche: nur das Nötigste */
+    /** Oberfläche: Steuerkreuz, A/B/X/Y, LB/RB, SELECT, START (Codes = Xbox-Positionen) */
     val frontend: Layout = Layout(
         listOf(
-            start("MENÜ", KeyEvent.KEYCODE_BUTTON_START),
+            back("SELECT", KeyEvent.KEYCODE_BUTTON_SELECT),
+            start("START", KeyEvent.KEYCODE_BUTTON_START),
             lb("LB", KeyEvent.KEYCODE_BUTTON_L1),
             rb("RB", KeyEvent.KEYCODE_BUTTON_R1),
-            faceRight("B", COL_RED, KeyEvent.KEYCODE_BUTTON_A),
-            faceBottom("A", COL_GREEN, KeyEvent.KEYCODE_BUTTON_B)
+            faceTop("Y", COL_YELLOW, KeyEvent.KEYCODE_BUTTON_Y),
+            faceLeft("X", COL_BLUE, KeyEvent.KEYCODE_BUTTON_X),
+            faceRight("B", COL_RED, KeyEvent.KEYCODE_BUTTON_B),
+            faceBottom("A", COL_GREEN, KeyEvent.KEYCODE_BUTTON_A)
         ),
         dpadNormal, emptyList()
     )

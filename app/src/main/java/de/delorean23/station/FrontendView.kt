@@ -50,6 +50,8 @@ class FrontendView(context: Context) : View(context) {
         set(v) { field = v; invalidate() }
     var systemView = "horizontal"
         set(v) { field = v; invalidate() }
+    var swapAB = false
+        set(v) { field = v; invalidate() }
     var gameView = "detailed"
         set(v) { field = v; listScroll = 0f; invalidate() }
 
@@ -573,10 +575,15 @@ class FrontendView(context: Context) : View(context) {
         c.drawRect(0f, h - barH, w, h, paint)
         text.typeface = theme.fontRegular; text.color = Color.WHITE; text.textSize = barH * 0.42f
         val y = h - barH * 0.33f
+        val ok = if (swapAB) "B" else "A"
+        val no = if (swapAB) "A" else "B"
         val items = if (inGameList)
-            listOf("B" to "Starten", "A" to "Zurück", "Y" to "Favorit", "SELECT" to "Optionen", "START" to "Menü")
-        else listOf("B" to "Auswählen", "◀ ▶" to "System", "START" to "Menü")
-        var x = w * 0.30f
+            listOf(ok to "Starten", no to "Zurück", "X" to "Suche", "Y" to "Favorit", "SELECT" to "Optionen", "START" to "Menü")
+        else listOf(ok to "Auswählen", "◀ ▶" to "System", "X" to "Suche", "START" to "Menü")
+        // mittig ausrichten
+        var total = 0f
+        for ((key, label) in items) total += text.measureText(key) + barH * 0.6f + text.measureText(label) + barH * 0.8f
+        var x = ((w - total) / 2).coerceAtLeast(w * 0.02f)
         for ((key, label) in items) {
             paint.color = 0x50FFFFFF
             val kw = text.measureText(key) + barH * 0.4f

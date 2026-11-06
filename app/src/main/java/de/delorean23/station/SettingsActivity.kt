@@ -136,7 +136,7 @@ class SettingsActivity : AppCompatActivity() {
         choice("Touch-Controller", modeNames[modes.indexOf(cfg.touchMode).coerceAtLeast(0)], modeNames) { cfg.touchMode = modes[it]; show(page) }
         slider("Touch-Deckkraft", cfg.touchOpacity) { cfg.touchOpacity = it }
         toggle("Vibration bei Touch", cfg.touchVibrate) { cfg.touchVibrate = it }
-        toggle("Bestätigen/Zurück tauschen (A/B)", cfg.swapAB) { cfg.swapAB = it }
+        toggle("Batocera-Belegung (B bestätigt, A zurück)", cfg.swapAB) { cfg.swapAB = it }
         section("CONTROLLER")
         item("Controller einstellen", "") { startActivity(Intent(this, ControllerMapActivity::class.java)) }
         label("Spieler 2: zweiten Controller verbinden. Ist der Touch-Controller sichtbar, ist er Spieler 1 und der erste echte Controller Spieler 2.")
@@ -429,8 +429,8 @@ class SettingsActivity : AppCompatActivity() {
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (event.action == KeyEvent.ACTION_DOWN) {
             val code = Remap.translate(this, event)
-            val confirm = if (cfg.swapAB) KeyEvent.KEYCODE_BUTTON_A else KeyEvent.KEYCODE_BUTTON_B
-            val cancel = if (cfg.swapAB) KeyEvent.KEYCODE_BUTTON_B else KeyEvent.KEYCODE_BUTTON_A
+            val confirm = Ui.confirmKey(cfg)
+            val cancel = Ui.cancelKey(cfg)
             when (code) {
                 confirm -> { currentFocus?.performClick(); return true }
                 cancel, KeyEvent.KEYCODE_BUTTON_START -> { if (page == "main") finish() else show("main"); return true }
