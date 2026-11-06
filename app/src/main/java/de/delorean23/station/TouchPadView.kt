@@ -25,7 +25,7 @@ import kotlin.math.hypot
 class TouchPadView(context: Context) : View(context) {
 
     interface Listener {
-        /** key = RetroPad-Code (KeyEvent.KEYCODE_BUTTON_*/DPAD_*) oder PadLayouts.K_* */
+        /** key = RetroPad-Code (KeyEvent.KEYCODE_BUTTON_x oder DPAD_x) oder PadLayouts.K_* */
         fun onKey(key: Int, pressed: Boolean)
         /** Werte -1..1 */
         fun onStick(left: Boolean, x: Float, y: Float)

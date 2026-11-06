@@ -124,12 +124,12 @@ object ThemeDownloader {
     }
 }
 
-/** Update-Prüfung über die GitHub-Releases von DeLorean23/Neon-Racer. */
+/** Update-Prüfung über die GitHub-Releases von DeLorean23/Batocera-Android. */
 object Updater {
 
     class Update(val build: Int, val url: String, val name: String)
 
-    private const val API = "https://api.github.com/repos/DeLorean23/Neon-Racer/releases/latest"
+    private const val API = "https://api.github.com/repos/DeLorean23/Batocera-Android/releases/latest"
 
     fun check(): Update? {
         val o = JSONObject(Http.text(API))
