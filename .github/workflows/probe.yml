@@ -1,0 +1,38 @@
+name: Store prüfen
+on:
+  push:
+    branches: [probe]
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Batocera-Store lesen
+        run: |
+          mkdir -p p && cd p
+          for f in batocera.db batocera.db.tar.gz batocera.files; do
+            echo "== $f: $(curl -s -o $f -w '%{http_code} %{size_download}' https://store.batocera.org/$f)" >> ../probe.txt
+          done
+          file batocera.db >> ../probe.txt 2>&1 || true
+          mkdir db && (tar -xf batocera.db -C db 2>>../probe.txt || true)
+          ls db | head -400 >> ../probe.txt
+          echo "== COUNT $(ls db | wc -l)" >> ../probe.txt
+          for d in $(ls db | head -6); do echo "#### $d" >> ../probe.txt; cat db/$d/desc >> ../probe.txt; done
+          echo "== GROUPS" >> ../probe.txt
+          cat db/*/desc | awk '/%GROUPS%/{getline; print}' | sort | uniq -c >> ../probe.txt
+          echo "== ARCH" >> ../probe.txt
+          cat db/*/desc | awk '/%ARCH%/{getline; print}' | sort | uniq -c >> ../probe.txt
+          echo "== OPENBOR core" >> ../probe.txt
+          curl -s -o /dev/null -w '%{http_code}\n' https://buildbot.libretro.com/nightly/android/latest/arm64-v8a/openbor_libretro_android.so.zip >> ../probe.txt
+          PK=$(cat db/*/desc | awk '/%FILENAME%/{getline; print}' | head -1)
+          echo "== SAMPLE $PK" >> ../probe.txt
+          curl -s -o pkg https://store.batocera.org/$PK && file pkg >> ../probe.txt
+          (zstd -dc pkg 2>/dev/null || xz -dc pkg 2>/dev/null) | tar -t 2>/dev/null | head -40 >> ../probe.txt
+      - name: Ergebnis speichern
+        run: |
+          git config user.name build-bot; git config user.email build-bot@users.noreply.github.com
+          git checkout --orphan probe-result
+          git rm -rq --cached . || true
+          git add -f probe.txt && git commit -qm probe && git push -f origin probe-result
