@@ -36,6 +36,8 @@ class TouchPadView(context: Context) : View(context) {
     var opacity = 0.7f
         set(v) { field = v; invalidate() }
     var vibrate = true
+    /** Berührungen neben den Tasten an die Ansicht darunter weitergeben (Oberfläche) */
+    var passThrough = false
 
     private class Button(val btn: Btn, val label: String, val color: Int, val round: Boolean) {
         val rect = RectF()
@@ -232,7 +234,11 @@ class TouchPadView(context: Context) : View(context) {
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(e: MotionEvent): Boolean {
         when (e.actionMasked) {
-            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
+            MotionEvent.ACTION_DOWN -> {
+                // Kein Bedienelement getroffen: Touch an die Ansicht darunter weitergeben
+                if (!pointerDown(e.getPointerId(0), e.getX(0), e.getY(0)) && passThrough) return false
+            }
+            MotionEvent.ACTION_POINTER_DOWN -> {
                 val i = e.actionIndex
                 pointerDown(e.getPointerId(i), e.getX(i), e.getY(i))
             }
@@ -246,18 +252,20 @@ class TouchPadView(context: Context) : View(context) {
         return true
     }
 
-    private fun pointerDown(id: Int, x: Float, y: Float) {
+    /** true, wenn ein Bedienelement getroffen wurde */
+    private fun pointerDown(id: Int, x: Float, y: Float): Boolean {
         for (s in listOf(leftStick, rightStick)) {
             if (s.pointer < 0 && hypot(x - s.cx, y - s.cy) <= s.r * 1.25f) {
-                s.pointer = id; moveStick(s, x, y); return
+                s.pointer = id; moveStick(s, x, y); return true
             }
         }
         // Steuerkreuz: Diagonalen erlauben
-        if (dpad.contains(x, y)) { dpadPointer = id; updateDpad(x, y); return }
+        if (dpad.contains(x, y)) { dpadPointer = id; updateDpad(x, y); return true }
         for (b in buttons) {
             if (b.btn in dpadBtns) continue
-            if (hit(b, x, y)) { press(b, id); return }
+            if (hit(b, x, y)) { press(b, id); return true }
         }
+        return false
     }
 
     private var dpadPointer = -1
@@ -357,5 +365,24 @@ class TouchPadView(context: Context) : View(context) {
     companion object {
         val faceBtns = setOf(Btn.A, Btn.B, Btn.X, Btn.Y)
         val dpadBtns = setOf(Btn.UP, Btn.DOWN, Btn.LEFT, Btn.RIGHT)
+
+        /** Ist ein echter Controller angeschlossen? */
+        fun hasGamepad(): Boolean {
+            for (id in android.view.InputDevice.getDeviceIds()) {
+                val d = android.view.InputDevice.getDevice(id) ?: continue
+                if (d.isVirtual) continue
+                val s = d.sources
+                if ((s and android.view.InputDevice.SOURCE_GAMEPAD) == android.view.InputDevice.SOURCE_GAMEPAD ||
+                    (s and android.view.InputDevice.SOURCE_JOYSTICK) == android.view.InputDevice.SOURCE_JOYSTICK) return true
+            }
+            return false
+        }
+
+        /** Soll der Touch-Controller sichtbar sein (Einstellung + Controller-Erkennung)? */
+        fun shouldShow(mode: String): Boolean = when (mode) {
+            "an" -> true
+            "aus" -> false
+            else -> !hasGamepad()
+        }
     }
 }

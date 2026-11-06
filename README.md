@@ -11,7 +11,7 @@ Emulator-Frontend für Android im Stil von Batocera. Created by DeLorean23
   - `themes/` – Theme-Ordner, z. B. `themes/es-theme-carbon`
 - Speichermedium **Intern** oder **Netzwerk (SMB)**: Im Netzwerk-Modus werden Systeme, gamelist und Cover direkt von der Freigabe gelesen. Beim Start wird das Spiel samt Cover und gamelist-Eintrag in den passenden lokalen Ordner `roms/<system>` kopiert.
 - Eingebaute Emulatoren (Libretro-Cores), Liste in `cores.txt`; welche wirklich in der APK stecken, steht in `Cores.txt` in der ZIP
-- Voller Xbox-One-Controller auf dem Touchscreen (beide Sticks, Steuerkreuz, A/B/X/Y als Raute, LB/RB, LT/RT, L3/R3, Ansicht, Menü, Xbox-Taste); blendet sich bei angeschlossenem Controller automatisch aus
+- Voller Xbox-One-Controller auf dem Touchscreen (beide Sticks, Steuerkreuz, A/B/X/Y als Raute, LB/RB, LT/RT, L3/R3, Ansicht, Menü, Xbox-Taste); im Spiel und in der Oberfläche, blendet sich bei angeschlossenem Controller automatisch aus
 
 ## Theme
 Die Theme-Dateien werden **nicht** mit der App ausgeliefert. Den Ordner `es-theme-carbon` von deinem Batocera-PC (`/userdata/themes` oder aus dem System-Theme) nach `batocera/themes/` kopieren.

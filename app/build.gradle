@@ -11,8 +11,8 @@ android {
         applicationId 'de.delorean23.station'
         minSdk 21
         targetSdk 34
-        versionCode 1
-        versionName '1.0'
+        versionCode 2
+        versionName '1.1'
     }
 
     // Zwei getrennte APKs: 32-bit (armeabi-v7a) und 64-bit (arm64-v8a)

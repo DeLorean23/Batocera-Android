@@ -116,7 +116,7 @@ class SettingsActivity : AppCompatActivity() {
         item("Ordner", cfg.base.path) {
             message("Ordnerstruktur", "${cfg.romsDir.path}/<system>\n${cfg.biosDir.path}\n${cfg.savesDir.path}/<system>\n${cfg.themesDir.path}")
         }
-        label("DeLorean Station 1.0  ·  Created by DeLorean23")
+        label("DeLorean Station 1.1  ·  Created by DeLorean23")
 
         section("")
         item("Zurück", "") { finish() }

@@ -1,7 +1,13 @@
 package de.delorean23.station
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.hardware.input.InputManager
+import android.os.Handler
+import android.os.Looper
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -20,7 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
-class MainActivity : AppCompatActivity(), FrontendView.Listener {
+class MainActivity : AppCompatActivity(), FrontendView.Listener, InputManager.InputDeviceListener {
 
     private lateinit var cfg: Config
     private lateinit var view: FrontendView
@@ -37,14 +43,105 @@ class MainActivity : AppCompatActivity(), FrontendView.Listener {
         view.listener = this
         view.isFocusable = true
         view.isFocusableInTouchMode = true
-        setContentView(view)
+
+        // Voller Xbox-One-Touch-Controller auch in der Oberfläche
+        pad = TouchPadView(this).also {
+            it.passThrough = true
+            it.listener = padListener
+        }
+        val root = FrameLayout(this)
+        root.addView(view, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        root.addView(pad, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        setContentView(root)
+        (getSystemService(Context.INPUT_SERVICE) as InputManager).registerInputDeviceListener(this, null)
         hideSystemUi()
+    }
+
+    // ---------------------------------------------------------------- Touch-Controller
+
+    private lateinit var pad: TouchPadView
+    private val repeatHandler = Handler(Looper.getMainLooper())
+    private var repeatAction: (() -> Unit)? = null
+    private var stickDir = 0   // 0 = Mitte, 1 hoch, 2 runter, 3 links, 4 rechts
+
+    private val repeatRunnable = object : Runnable {
+        override fun run() {
+            repeatAction?.let { it(); repeatHandler.postDelayed(this, 90) }
+        }
+    }
+
+    private fun startRepeat(action: () -> Unit) {
+        stopRepeat()
+        action()
+        repeatAction = action
+        repeatHandler.postDelayed(repeatRunnable, 380)
+    }
+
+    private fun stopRepeat() {
+        repeatAction = null
+        repeatHandler.removeCallbacks(repeatRunnable)
+    }
+
+    private fun updatePad() {
+        pad.opacity = cfg.touchOpacity / 100f
+        pad.vibrate = cfg.touchVibrate
+        val show = TouchPadView.shouldShow(cfg.touchMode)
+        pad.visibility = if (show) View.VISIBLE else View.GONE
+        if (!show) { pad.releaseAll(); stopRepeat() }
+    }
+
+    override fun onInputDeviceAdded(deviceId: Int) = updatePad()
+    override fun onInputDeviceRemoved(deviceId: Int) = updatePad()
+    override fun onInputDeviceChanged(deviceId: Int) = updatePad()
+
+    private val padListener = object : TouchPadView.Listener {
+        override fun onButton(btn: TouchPadView.Btn, pressed: Boolean) {
+            val confirmBtn = if (cfg.swapAB) TouchPadView.Btn.A else TouchPadView.Btn.B
+            val backBtn = if (cfg.swapAB) TouchPadView.Btn.B else TouchPadView.Btn.A
+            if (!pressed) {
+                if (btn in TouchPadView.dpadBtns || btn == TouchPadView.Btn.LT || btn == TouchPadView.Btn.RT) stopRepeat()
+                return
+            }
+            when (btn) {
+                TouchPadView.Btn.UP -> startRepeat { view.moveVertical(-1) }
+                TouchPadView.Btn.DOWN -> startRepeat { view.moveVertical(1) }
+                TouchPadView.Btn.LEFT -> startRepeat { view.moveHorizontal(-1) }
+                TouchPadView.Btn.RIGHT -> startRepeat { view.moveHorizontal(1) }
+                TouchPadView.Btn.LT -> startRepeat { view.moveVertical(-10) }
+                TouchPadView.Btn.RT -> startRepeat { view.moveVertical(10) }
+                TouchPadView.Btn.LB -> view.jumpLetter(-1)
+                TouchPadView.Btn.RB -> view.jumpLetter(1)
+                TouchPadView.Btn.MENU, TouchPadView.Btn.GUIDE -> onMenu()
+                confirmBtn -> view.confirm()
+                backBtn -> if (!view.back()) askExit()
+                else -> {}
+            }
+        }
+
+        override fun onStick(left: Boolean, x: Float, y: Float) {
+            if (!left) return
+            val dir = when {
+                kotlin.math.abs(x) < 0.5f && kotlin.math.abs(y) < 0.5f -> 0
+                kotlin.math.abs(y) >= kotlin.math.abs(x) -> if (y < 0) 1 else 2
+                else -> if (x < 0) 3 else 4
+            }
+            if (dir == stickDir) return
+            stickDir = dir
+            when (dir) {
+                0 -> stopRepeat()
+                1 -> startRepeat { view.moveVertical(-1) }
+                2 -> startRepeat { view.moveVertical(1) }
+                3 -> startRepeat { view.moveHorizontal(-1) }
+                4 -> startRepeat { view.moveHorizontal(1) }
+            }
+        }
     }
 
     override fun onResume() {
         super.onResume()
         hideSystemUi()
         launching = false
+        updatePad()
         if (!hasStorage()) {
             askStorage()
             return
@@ -240,7 +337,16 @@ class MainActivity : AppCompatActivity(), FrontendView.Listener {
             .show()
     }
 
+    override fun onPause() {
+        super.onPause()
+        stopRepeat()
+        pad.releaseAll()
+        stickDir = 0
+    }
+
     override fun onDestroy() {
+        try { (getSystemService(Context.INPUT_SERVICE) as InputManager).unregisterInputDeviceListener(this) } catch (_: Exception) {}
+        stopRepeat()
         super.onDestroy()
         val lib = library
         Thread { try { lib?.close() } catch (_: Exception) {} }.start()
