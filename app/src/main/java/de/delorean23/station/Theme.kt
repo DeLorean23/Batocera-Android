@@ -15,7 +15,7 @@ import java.io.File
  * Nutzer und werden nicht mit der App ausgeliefert. Ohne Theme wird ein
  * schlichter Ersatz-Look gezeichnet.
  */
-class Theme(val dir: File) {
+class Theme(val dir: File, colorset: String = "") {
 
     val exists = File(dir, "theme.xml").isFile
 
@@ -43,6 +43,15 @@ class Theme(val dir: File) {
                     vars[m.groupValues[1]] = m.groupValues[2].trim()
                 }
             } catch (_: Exception) {}
+            // Farbschema (subsets/colorsets/<name>.xml) überschreibt die Farben
+            if (colorset.isNotEmpty()) {
+                val f = File(dir, "subsets/colorsets/$colorset.xml")
+                if (f.isFile) try {
+                    Regex("<([A-Za-z0-9_.]+)>([^<]*)</\\1>").findAll(f.readText()).forEach { m ->
+                        vars[m.groupValues[1]] = m.groupValues[2].trim()
+                    }
+                } catch (_: Exception) {}
+            }
         }
         baseColor = color(vars["baseColor"], 0xFF8B0000.toInt())
         backgroundColor = color(vars["backgroundColor"], 0xFF200000.toInt())
@@ -66,8 +75,12 @@ class Theme(val dir: File) {
     fun systemArt(system: String, maxW: Int, maxH: Int): Bitmap? =
         firstImage(listOf("art/background/$system.jpg", "art/background/$system.png"), maxW, maxH)
 
+    /** Farbschemata des Themes (Dateinamen ohne .xml) */
+    fun colorsets(): List<String> =
+        File(dir, "subsets/colorsets").listFiles()?.filter { it.name.endsWith(".xml") }?.map { it.nameWithoutExtension }?.sorted() ?: emptyList()
+
     fun logo(system: String, maxW: Int, maxH: Int): Bitmap? = firstImage(
-        listOf("art/logos/$system.svg", "art/logos/$system.png", "art/logos/$system-w.svg",
+        listOf("art/logos/$system-de.svg", "art/logos/$system.svg", "art/logos/$system.png", "art/logos/$system-w.svg",
             "$system/art/logo.svg", "$system/art/logo.png", "$system/logo.svg", "$system/logo.png"), maxW, maxH)
 
     fun console(system: String, maxW: Int, maxH: Int): Bitmap? = firstImage(

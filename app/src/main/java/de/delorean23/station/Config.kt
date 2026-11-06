@@ -87,6 +87,93 @@ class Config(context: Context) {
         get() = prefs.getString("lastSystem", "") ?: ""
         set(v) = prefs.edit().putString("lastSystem", v).apply()
 
+    // ---- Theme-Einstellungen (wie Batocera: Systemansicht, Spieleansicht, Farbschema)
+    var systemView: String
+        get() = prefs.getString("systemView", "horizontal") ?: "horizontal"
+        set(v) = prefs.edit().putString("systemView", v).apply()
+
+    var gameView: String
+        get() = prefs.getString("gameView", "detailed") ?: "detailed"
+        set(v) = prefs.edit().putString("gameView", v).apply()
+
+    var colorset: String
+        get() = prefs.getString("colorset", "") ?: ""
+        set(v) = prefs.edit().putString("colorset", v).apply()
+
+    var videoPreview: Boolean
+        get() = prefs.getBoolean("videoPreview", true)
+        set(v) = prefs.edit().putBoolean("videoPreview", v).apply()
+
+    // ---- Standard-Bild (alle Spiele), pro Spiel überschreibbar
+    var aspect: String
+        get() = prefs.getString("aspect", "core") ?: "core"
+        set(v) = prefs.edit().putString("aspect", v).apply()
+
+    var integerScale: Boolean
+        get() = prefs.getBoolean("integerScale", false)
+        set(v) = prefs.edit().putBoolean("integerScale", v).apply()
+
+    // ---- Scraper
+    var scrapeSource: String
+        get() = prefs.getString("scrapeSource", "screenscraper") ?: "screenscraper"
+        set(v) = prefs.edit().putString("scrapeSource", v).apply()
+    var ssUser: String
+        get() = prefs.getString("ssUser", "") ?: ""
+        set(v) = prefs.edit().putString("ssUser", v.trim()).apply()
+    var ssPassword: String
+        get() = prefs.getString("ssPassword", "") ?: ""
+        set(v) = prefs.edit().putString("ssPassword", v).apply()
+    var ssDevId: String
+        get() = prefs.getString("ssDevId", "") ?: ""
+        set(v) = prefs.edit().putString("ssDevId", v.trim()).apply()
+    var ssDevPassword: String
+        get() = prefs.getString("ssDevPassword", "") ?: ""
+        set(v) = prefs.edit().putString("ssDevPassword", v.trim()).apply()
+    /** mixrbv2, box-2D, ss */
+    var scrapeImage: String
+        get() = prefs.getString("scrapeImage", "mixrbv2") ?: "mixrbv2"
+        set(v) = prefs.edit().putString("scrapeImage", v).apply()
+    var scrapeVideos: Boolean
+        get() = prefs.getBoolean("scrapeVideos", false)
+        set(v) = prefs.edit().putBoolean("scrapeVideos", v).apply()
+    var scrapeOnlyMissing: Boolean
+        get() = prefs.getBoolean("scrapeOnlyMissing", true)
+        set(v) = prefs.edit().putBoolean("scrapeOnlyMissing", v).apply()
+
+    // ---- Updates
+    var lastUpdateCheck: Long
+        get() = prefs.getLong("lastUpdateCheck", 0)
+        set(v) = prefs.edit().putLong("lastUpdateCheck", v).apply()
+    var autoUpdateCheck: Boolean
+        get() = prefs.getBoolean("autoUpdateCheck", true)
+        set(v) = prefs.edit().putBoolean("autoUpdateCheck", v).apply()
+
+    // ---- Netplay
+    var netplayName: String
+        get() = prefs.getString("netplayName", android.os.Build.MODEL ?: "Spieler") ?: "Spieler"
+        set(v) = prefs.edit().putString("netplayName", v.trim()).apply()
+
+    // ---- Einstellungen pro Spiel ("" = Standard)
+    private fun gameKey(system: String, path: String, key: String) = "g|$system|$path|$key"
+    fun gameSetting(system: String, path: String, key: String): String =
+        prefs.getString(gameKey(system, path, key), "") ?: ""
+    fun setGameSetting(system: String, path: String, key: String, value: String) {
+        if (value.isEmpty()) prefs.edit().remove(gameKey(system, path, key)).apply()
+        else prefs.edit().putString(gameKey(system, path, key), value).apply()
+    }
+
+    /** Wirksamer Wert: Spiel → System → global */
+    fun effective(system: String, path: String, key: String): String {
+        gameSetting(system, path, key).takeIf { it.isNotEmpty() }?.let { return it }
+        return when (key) {
+            "core" -> coreFor(system)
+            "aspect" -> aspect
+            "scale" -> if (integerScale) "integer" else "normal"
+            "shader" -> shader
+            else -> ""
+        }
+    }
+
     /** Pro System gewählter Core ("" = Standard) */
     fun coreFor(system: String): String = prefs.getString("core_$system", "") ?: ""
     fun setCoreFor(system: String, core: String) =

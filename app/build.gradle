@@ -11,8 +11,11 @@ android {
         applicationId 'de.delorean23.station'
         minSdk 21
         targetSdk 34
-        versionCode 2
-        versionName '1.1'
+        // Build-Nummer aus GitHub Actions = Versionsnummer (für die Update-Prüfung)
+        def build = (System.getenv('BUILD_NUMBER') ?: '1') as int
+        versionCode build
+        versionName "1.2 (Build ${build})"
+        buildConfigField 'int', 'BUILD_NUMBER', "${build}"
     }
 
     // Zwei getrennte APKs: 32-bit (armeabi-v7a) und 64-bit (arm64-v8a)
@@ -54,6 +57,10 @@ android {
             excludes += ['META-INF/DEPENDENCIES', 'META-INF/LICENSE*', 'META-INF/NOTICE*',
                          'META-INF/versions/9/OSGI-INF/MANIFEST.MF', 'META-INF/*.kotlin_module']
         }
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 
     compileOptions {

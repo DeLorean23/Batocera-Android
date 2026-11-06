@@ -51,3 +51,4 @@ o2em both
 opera both
 puae both
 px68k both
+tgbdual both

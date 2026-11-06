@@ -6,8 +6,8 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.util.zip.ZipInputStream
 
-/** Ein System mit seinen Spielen aus der aktuellen Quelle. */
-class SystemEntry(val system: GameSystem, val games: List<Game>)
+/** Ein System (oder eine Sammlung) mit seinen Spielen aus der aktuellen Quelle. */
+class SystemEntry(val system: GameSystem, val games: List<Game>, val collection: Boolean = false)
 
 /**
  * Liest Systeme und Spiele aus der aktiven Quelle (intern oder Netzwerk) und
@@ -26,14 +26,39 @@ class Library(private val context: Context, private val cfg: Config) {
             val games = loadGames(sys)
             if (games.isNotEmpty()) out.add(SystemEntry(sys, games))
         }
-        return out
+        return withCollections(out)
+    }
+
+    /** Sammlungen wie bei Batocera: Favoriten, Zuletzt gespielt, Alle Spiele (vorne im Karussell). */
+    fun withCollections(systems: List<SystemEntry>): List<SystemEntry> {
+        val real = systems.filter { !it.collection }
+        val all = real.flatMap { it.games }
+        val result = ArrayList<SystemEntry>()
+        val fav = all.filter { it.favorite }.sortedBy { it.name.lowercase() }
+        if (fav.isNotEmpty()) result.add(SystemEntry(COLL_FAV, fav, true))
+        val last = all.filter { it.lastplayed.isNotEmpty() }.sortedByDescending { it.lastplayed }.take(50)
+        if (last.isNotEmpty()) result.add(SystemEntry(COLL_LAST, last, true))
+        if (all.isNotEmpty()) result.add(SystemEntry(COLL_ALL, all.sortedBy { it.name.lowercase() }, true))
+        result.addAll(real)
+        return result
     }
 
     private fun loadGames(sys: GameSystem): List<Game> {
         val files = try { source.list(sys.id) } catch (e: Exception) { emptyList() }
-        val gamelist: List<Game> = try {
+        var gamelist: List<Game> = try {
             source.open(sys.id, "gamelist.xml")?.use { GameList.parse(it) } ?: emptyList()
         } catch (e: Exception) { emptyList() }
+        // Netzwerk: lokale Daten (Favoriten, Spielzeit, Scraper) über die NAS-Daten legen
+        if (source.isNetwork) {
+            val localFile = File(File(cfg.romsDir, sys.id), "gamelist.xml")
+            val local = if (localFile.isFile) try { localFile.inputStream().use { GameList.parse(it) } } catch (e: Exception) { emptyList() } else emptyList()
+            if (local.isNotEmpty()) {
+                val byPath = local.associateBy { it.path }
+                val merged = gamelist.map { g -> byPath[g.path]?.let { GameList.overlay(g, it) } ?: g }
+                val known = gamelist.map { it.path }.toSet()
+                gamelist = merged + local.filter { it.path !in known }
+            }
+        }
 
         val present = HashSet<String>()
         files.forEach { present.add(it.path) }
@@ -78,10 +103,49 @@ class Library(private val context: Context, private val cfg: Config) {
                 ext in setOf("cue", "chd", "iso") && m3uNames.any { base.startsWith(it) && base != it } -> false
                 else -> true
             }
-        }.sortedBy { it.name.lowercase() }
+        }.onEach { it.system = sys.id }.sortedBy { it.name.lowercase() }
     }
 
-    /** Liefert eine lokale Bilddatei (Cover), aus dem Netzwerk wird sie zwischengespeichert. */
+    /** Liest den aktuellen lokalen Eintrag eines Spiels neu (nach dem Spielen). */
+    fun refreshGame(game: Game) {
+        val f = File(File(cfg.romsDir, game.system), "gamelist.xml")
+        if (!f.isFile) return
+        val g = try { f.inputStream().use { GameList.parse(it) } } catch (e: Exception) { return }.firstOrNull { it.path == game.path } ?: return
+        game.playcount = g.playcount; game.lastplayed = g.lastplayed; game.gametime = g.gametime
+        game.favorite = g.favorite; game.hidden = g.hidden
+        if (g.image.isNotEmpty()) game.image = g.image
+        if (g.video.isNotEmpty()) game.video = g.video
+        if (g.name.isNotEmpty()) game.name = g.name
+        if (g.desc.isNotEmpty()) game.desc = g.desc
+    }
+
+    /** Schreibt Felder in die lokale gamelist.xml des Spiels und übernimmt sie in den Speicher. */
+    fun updateGame(game: Game, edit: (MutableMap<String, String>) -> Unit) {
+        val f = File(File(cfg.romsDir, game.system), "gamelist.xml")
+        val fields = GameList.updateEntry(f, game.path, game.name, game.raw, edit)
+        game.raw.clear(); game.raw.putAll(fields); game.raw.remove("path")
+        game.name = fields["name"].orEmpty().ifEmpty { game.name }
+        game.desc = fields["desc"].orEmpty()
+        game.favorite = fields["favorite"] == "true"
+        game.hidden = fields["hidden"] == "true"
+        game.playcount = fields["playcount"]?.toIntOrNull() ?: 0
+        game.lastplayed = fields["lastplayed"].orEmpty()
+        game.gametime = fields["gametime"]?.toLongOrNull() ?: 0
+        game.image = GameList.clean(fields["image"].orEmpty())
+        game.thumbnail = GameList.clean(fields["thumbnail"].orEmpty())
+        game.marquee = GameList.clean(fields["marquee"].orEmpty())
+        game.video = GameList.clean(fields["video"].orEmpty())
+        game.rating = fields["rating"]?.toFloatOrNull() ?: 0f
+        game.releaseDate = fields["releasedate"].orEmpty()
+        game.developer = fields["developer"].orEmpty()
+        game.publisher = fields["publisher"].orEmpty()
+        game.genre = fields["genre"].orEmpty()
+        game.players = fields["players"].orEmpty()
+    }
+
+    /** Liefert eine lokale Bild- oder Videodatei, aus dem Netzwerk wird sie zwischengespeichert. */
+    fun mediaFile(systemId: String, rel: String): File? = Systems.byId(systemId)?.let { coverFile(it, rel) }
+
     fun coverFile(sys: GameSystem, rel: String): File? {
         if (rel.isEmpty()) return null
         if (!source.isNetwork) {
@@ -230,6 +294,11 @@ class Library(private val context: Context, private val cfg: Config) {
     fun close() = source.close()
 
     companion object {
+        val COLL_FAV = GameSystem("auto-favorites", "Favoriten", "Sammlung", 0, emptyList(), emptyList())
+        val COLL_LAST = GameSystem("auto-lastplayed", "Zuletzt gespielt", "Sammlung", 0, emptyList(), emptyList())
+        val COLL_ALL = GameSystem("auto-allgames", "Alle Spiele", "Sammlung", 0, emptyList(), emptyList())
+        val SEARCH = GameSystem("search", "Suche", "Suche", 0, emptyList(), emptyList())
+
         val cdSystems = setOf("psx", "megacd", "saturn", "pcenginecd", "pcfx", "neogeocd", "3do", "dreamcast", "jaguar")
     }
 }

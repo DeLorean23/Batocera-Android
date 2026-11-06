@@ -39,6 +39,8 @@ object Systems {
             listOf("z64", "n64", "v64") + cartExt, listOf("mupen64plus_next_gles3", "mupen64plus_next", "parallel_n64"), zipNative = true),
         GameSystem("gb", "Game Boy", "Nintendo", 1989,
             listOf("gb") + cartExt, listOf("gambatte", "mgba"), zipNative = true, hardware = "portable"),
+        GameSystem("gb2players", "Game Boy (2 players)", "Nintendo", 1989,
+            listOf("gb", "gbc") + cartExt, listOf("tgbdual"), zipNative = true, hardware = "portable"),
         GameSystem("gbc", "Game Boy Color", "Nintendo", 1998,
             listOf("gbc") + cartExt, listOf("gambatte", "mgba"), zipNative = true, hardware = "portable"),
         GameSystem("gba", "Game Boy Advance", "Nintendo", 2001,

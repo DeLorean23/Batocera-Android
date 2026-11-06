@@ -29,6 +29,11 @@ data class Game(
     var players: String = "",
     var hidden: Boolean = false,
     var favorite: Boolean = false,
+    var playcount: Int = 0,
+    var lastplayed: String = "",
+    var gametime: Long = 0,
+    /** System-Ordner (für Sammlungen und Suche) */
+    var system: String = "",
     /** Alle Felder als Rohdaten, um sie unverändert in die lokale gamelist.xml zu übernehmen */
     val raw: MutableMap<String, String> = linkedMapOf()
 ) {
@@ -108,9 +113,40 @@ object GameList {
             players = m["players"].orEmpty(),
             hidden = m["hidden"] == "true",
             favorite = m["favorite"] == "true",
+            playcount = m["playcount"]?.toIntOrNull() ?: 0,
+            lastplayed = m["lastplayed"].orEmpty(),
+            gametime = m["gametime"]?.toLongOrNull() ?: 0,
             raw = LinkedHashMap(m)
         )
     }
+
+    /** Übernimmt alle Felder eines anderen Eintrags (lokale Daten über Netzwerk-Daten). */
+    fun overlay(target: Game, local: Game): Game {
+        val raw = LinkedHashMap(target.raw)
+        raw.putAll(local.raw)
+        return toGame(raw)!!.also { it.system = target.system }
+    }
+
+    /**
+     * Ändert Felder eines Eintrags in der lokalen gamelist.xml (legt ihn bei Bedarf an).
+     * edit bekommt die aktuellen Felder und ändert sie direkt; leere Werte werden entfernt.
+     */
+    @Synchronized
+    fun updateEntry(file: File, path: String, defaultName: String, base: Map<String, String> = emptyMap(),
+                    edit: (MutableMap<String, String>) -> Unit): Map<String, String> {
+        val existing = if (file.isFile) try { file.inputStream().use { parse(it) } } catch (e: Exception) { emptyList() } else emptyList()
+        val fields = LinkedHashMap<String, String>()
+        fields.putAll(base)
+        existing.firstOrNull { it.path == path }?.raw?.let { fields.putAll(it) }
+        if (fields["name"].isNullOrEmpty()) fields["name"] = defaultName
+        edit(fields)
+        val g = toGame(LinkedHashMap(fields).also { it["path"] = path }) ?: return fields
+        mergeInto(file, g)
+        return fields
+    }
+
+    /** Zeitstempel im Format von EmulationStation (lastplayed) */
+    fun now(): String = java.text.SimpleDateFormat("yyyyMMdd'T'HHmmss", java.util.Locale.US).format(java.util.Date())
 
     /**
      * Fügt ein Spiel in die lokale gamelist.xml ein (oder ersetzt den Eintrag mit
@@ -138,7 +174,7 @@ object GameList {
         fields["path"] = "./" + game.path
         if (!fields.containsKey("name")) fields["name"] = game.name
         for ((k, v) in fields) {
-            if (v.isEmpty()) continue
+            if (v.isEmpty() || !k.matches(Regex("[A-Za-z_][A-Za-z0-9_.-]*"))) continue
             val child = document.createElement(k)
             child.textContent = v
             el.appendChild(child)
