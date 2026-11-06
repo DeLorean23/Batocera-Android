@@ -41,6 +41,8 @@ jobs:
           git init -q external/openbor
           git -C external/openbor fetch -q --depth 1 https://github.com/DCurrent/openbor 65a7f0b41aee87fe4084e538634b4ed73236f871
           git -C external/openbor checkout -q FETCH_HEAD
+          # version.h erzeugen (wie OpenBORs eigenes build.sh)
+          cd external/openbor/engine && bash version.sh < /dev/null && ls -la version.h
 
       - name: Libretro-Cores laden
         run: bash scripts/fetch_cores.sh
