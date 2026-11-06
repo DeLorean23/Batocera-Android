@@ -19,7 +19,7 @@ import java.util.zip.ZipInputStream
 object BiosCheck {
 
     enum class State { OK, MISSING, WRONG }
-    class Entry(val file: String, val state: State)
+    class Entry(val file: String, val state: State, val md5: List<String> = emptyList())
     class SystemResult(val system: GameSystem, val entries: List<Entry>) {
         val missing get() = entries.count { it.state != State.OK }
     }
@@ -46,11 +46,36 @@ object BiosCheck {
                         if (sum != null && sum in md5s) State.OK else State.WRONG
                     }
                 }
-                Entry(file, state)
+                Entry(file, state, md5s)
             }
             out.add(SystemResult(sys, entries))
         }
+        try { writeReport(cfg, out) } catch (_: Exception) {}
         return out
+    }
+
+    /** bios/fehlende_bios.txt: was fehlt, wohin es gehört, welche Prüfsumme passt */
+    private fun writeReport(cfg: Config, res: List<SystemResult>) {
+        val sb = StringBuilder()
+        val now = java.text.SimpleDateFormat("dd.MM.yyyy HH:mm", java.util.Locale.GERMANY).format(java.util.Date())
+        sb.append("DeLorean Station – Fehlende BIOS-Dateien (Stand: $now)\n")
+        sb.append("Ordner: ${cfg.biosDir.path}\n")
+        sb.append("Liste wie bei Batocera. Bei manchen Systemen reicht eine der Dateien (z. B. PlayStation).\n\n")
+        val bad = res.filter { it.missing > 0 }
+        if (bad.isEmpty()) sb.append("Alle BIOS-Dateien sind vorhanden.\n")
+        for (r in bad) {
+            sb.append("== ${r.system.name} (${r.system.id}) ==\n")
+            for (e in r.entries.filter { it.state != State.OK }) {
+                val what = if (e.state == State.MISSING) "FEHLT" else "FALSCHE PRÜFSUMME"
+                sb.append("  $what: bios/${e.file}\n")
+                if (e.md5.isNotEmpty()) sb.append("      MD5: ${e.md5.joinToString(" oder ")}\n")
+            }
+            sb.append('\n')
+        }
+        val ok = res.filter { it.missing == 0 }
+        if (ok.isNotEmpty()) sb.append("Vollständig: ${ok.joinToString(", ") { it.system.name }}\n")
+        cfg.biosDir.mkdirs()
+        File(cfg.biosDir, "fehlende_bios.txt").writeText(sb.toString())
     }
 
     private fun md5(f: File): String? = try {

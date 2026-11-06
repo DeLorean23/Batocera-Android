@@ -200,9 +200,10 @@ class Library(private val context: Context, private val cfg: Config) {
             }
         }
 
-        // ZIP entpacken, wenn der Core das nicht selbst kann
-        if (game.path.endsWith(".zip", true) && !sys.zipNative) {
-            return extractZip(target, sys)
+        // ZIP/7z entpacken (wie RetroArch bei Batocera) – außer bei Arcade und DOS
+        val ext = game.path.substringAfterLast('.', "").lowercase()
+        if ((ext == "zip" || ext == "7z") && !Systems.keepsArchive(sys) && target.isFile) {
+            return Archives.extract(target, sys, File(cfg.base, "cache/entpackt"), progress)
         }
         return target
     }
@@ -267,28 +268,6 @@ class Library(private val context: Context, private val cfg: Config) {
         }
         if (dst.exists()) dst.delete()
         if (!tmp.renameTo(dst)) throw IllegalStateException("Konnte $rel nicht speichern")
-    }
-
-    private fun extractZip(zip: File, sys: GameSystem): File {
-        val outDir = File(context.cacheDir, "unzip/${sys.id}/${zip.nameWithoutExtension}")
-        val marker = File(outDir, ".from-${zip.length()}")
-        if (!marker.exists()) {
-            outDir.deleteRecursively(); outDir.mkdirs()
-            ZipInputStream(zip.inputStream().buffered()).use { zin ->
-                while (true) {
-                    val e = zin.nextEntry ?: break
-                    if (e.isDirectory) continue
-                    val f = File(outDir, e.name.substringAfterLast('/'))
-                    if (!f.canonicalPath.startsWith(outDir.canonicalPath)) continue
-                    FileOutputStream(f).use { zin.copyTo(it) }
-                }
-            }
-            marker.createNewFile()
-        }
-        val files = outDir.listFiles()?.filter { !it.name.startsWith(".") } ?: emptyList()
-        return files.firstOrNull { it.extension.lowercase() in sys.extensions && it.extension.lowercase() != "zip" }
-            ?: files.maxByOrNull { it.length() }
-            ?: zip
     }
 
     fun close() = source.close()

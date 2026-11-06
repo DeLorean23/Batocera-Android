@@ -222,9 +222,10 @@ class MainActivity : AppCompatActivity(), FrontendView.Listener, InputManager.In
         lifecycleScope.launch {
             val file = withContext(Dispatchers.IO) {
                 try {
-                    val f = lib.prepare(sys, game) { _, done, total ->
-                        val txt = if (total > 0) "Lade ${game.name} … ${(done * 100 / total)} %"
-                        else "Lade ${game.name} … ${done / (1024 * 1024)} MB"
+                    val f = lib.prepare(sys, game) { what, done, total ->
+                        val verb = if (what == "Entpacke") "Entpacke" else "Lade"
+                        val txt = if (total > 0) "$verb ${game.name} … ${(done * 100 / total)} %"
+                        else "$verb ${game.name} … ${done / (1024 * 1024)} MB"
                         runOnUiThread { view.statusText = txt }
                     }
                     // Batocera: Anzahl Starts und zuletzt gespielt

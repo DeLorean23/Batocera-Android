@@ -289,7 +289,13 @@ class GameActivity : AppCompatActivity(), TouchPadView.Listener, InputManager.In
     private fun showError(code: Int) {
         val msg = when (code) {
             GLRetroView.ERROR_LOAD_LIBRARY -> "Der Emulator-Core konnte nicht geladen werden."
-            GLRetroView.ERROR_LOAD_GAME -> "Das Spiel konnte nicht geladen werden.\nFehlt eventuell ein BIOS im Ordner\n${cfg.biosDir.path}?\n(Menü → Fehlende BIOS prüfen)"
+            GLRetroView.ERROR_LOAD_GAME -> {
+                val rom = File(intent.getStringExtra(EXTRA_ROM) ?: "")
+                val sb = StringBuilder("Der Emulator konnte die Datei nicht laden:\n${rom.name}\n\n")
+                sb.append("Mögliche Gründe: Datei beschädigt, falsches Format für dieses System oder falscher Emulator (Spiel-Einstellungen → Emulator).")
+                if (needsBios()) sb.append("\n\nDieses System braucht ein BIOS. Prüfen: Menü → Fehlende BIOS prüfen (legt bios/fehlende_bios.txt an).")
+                sb.toString()
+            }
             GLRetroView.ERROR_GL_NOT_COMPATIBLE -> "Dieses Gerät unterstützt die nötige Grafik (OpenGL ES) für diesen Emulator nicht."
             else -> "Fehler beim Starten des Emulators ($code)."
         }
@@ -297,6 +303,10 @@ class GameActivity : AppCompatActivity(), TouchPadView.Listener, InputManager.In
             .setTitle("Fehler").setMessage(msg).setCancelable(false)
             .setPositiveButton("Zurück") { _, _ -> quit(save = false) }.create(), cfg).show()
     }
+
+    private fun needsBios(): Boolean = try {
+        org.json.JSONObject(assets.open("bios.json").bufferedReader().use { it.readText() }).has(system)
+    } catch (e: Exception) { false }
 
     // ---------------------------------------------------------------- Touch-Sichtbarkeit
 

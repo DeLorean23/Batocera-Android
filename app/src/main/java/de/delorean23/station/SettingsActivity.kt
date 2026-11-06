@@ -198,6 +198,12 @@ class SettingsActivity : AppCompatActivity() {
         item("Version", BuildConfig.VERSION_NAME) {}
         item("Nach Update suchen", "") { checkUpdate() }
         toggle("Automatisch nach Updates suchen", cfg.autoUpdateCheck) { cfg.autoUpdateCheck = it }
+        val cache = File(cfg.base, "cache/entpackt")
+        item("Entpackte Spiele löschen", "%.1f GB".format(Archives.size(cache) / 1073741824.0)) {
+            Ui.confirm(this, cfg, "Entpackte Spiele", "Alle entpackten ZIP/7z-Spiele aus dem Zwischenordner löschen? Deine Original-Archive bleiben erhalten.", "Löschen") {
+                lifecycleScope.launch { withContext(Dispatchers.IO) { Archives.clear(cache) }; show(page) }
+            }
+        }
         item("Netplay-Name", cfg.netplayName) { input("Name im Netplay", cfg.netplayName) { cfg.netplayName = it; show(page) } }
         item("Ordnerstruktur", cfg.base.path) {
             message("Ordnerstruktur", "${cfg.romsDir.path}/<system>\n${cfg.biosDir.path}\n${cfg.savesDir.path}/<system>\n${cfg.themesDir.path}")
@@ -233,6 +239,7 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
             sb.append("\nHinweis: Bei manchen Systemen reicht eine der Dateien (z. B. PlayStation).")
+            sb.append("\n\nDie Liste steht auch in ${cfg.biosDir.path}/fehlende_bios.txt")
             message("Fehlende BIOS", sb.toString())
         }
     }

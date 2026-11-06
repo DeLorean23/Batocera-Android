@@ -22,7 +22,7 @@ data class GameSystem(
 
 object Systems {
 
-    private val cartExt = listOf("zip")
+    private val cartExt = listOf("zip", "7z")
 
     val all: List<GameSystem> = listOf(
         GameSystem("nes", "Nintendo Entertainment System", "Nintendo", 1983,
@@ -152,6 +152,9 @@ object Systems {
     )
 
     fun byId(id: String): GameSystem? = all.firstOrNull { it.id == id }
+
+    /** Archive (zip/7z) direkt an den Emulator geben (Arcade, DOS) statt zu entpacken */
+    fun keepsArchive(system: GameSystem): Boolean = system.hardware == "arcade" || system.id == "dos"
 
     fun coreFile(context: Context, core: String): File =
         File(context.applicationInfo.nativeLibraryDir, "lib${core}_libretro_android.so")

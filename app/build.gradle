@@ -82,4 +82,7 @@ dependencies {
     implementation 'com.hierynomus:smbj:0.13.0'
     // SVG-Logos aus dem Theme
     implementation 'com.caverock:androidsvg-aar:1.4'
+    // 7z-Archive (wie RetroArch bei Batocera)
+    implementation 'org.apache.commons:commons-compress:1.26.2'
+    implementation 'org.tukaani:xz:1.9'
 }

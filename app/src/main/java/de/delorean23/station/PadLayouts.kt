@@ -122,15 +122,22 @@ object PadLayouts {
         "gameandwatch" -> Layout(listOf(back("GAME A", KeyEvent.KEYCODE_BUTTON_L1), start("GAME B", KeyEvent.KEYCODE_BUTTON_R1),
             Btn("time", "TIME", COL_GRAY, KeyEvent.KEYCODE_BUTTON_SELECT, R, 0.13f, 0.396f, 0.058f),
             faceRight("A", COL_RED), faceBottom("B", COL_RED)), dpadNormal, emptyList())
-        "n64" -> Layout(listOf(start(), lt("Z", KeyEvent.KEYCODE_BUTTON_L2), lb("L"), rb("R"),
-            faceBottom("A", COL_BLUE, KeyEvent.KEYCODE_BUTTON_B),
-            faceLeft("B", COL_GREEN, KeyEvent.KEYCODE_BUTTON_Y),
-            // C-Tasten als kleine Raute (rechter Analogstick)
-            Btn("cu", "▲", COL_YELLOW, K_C_UP, R, 0.21f, 0.27f, 0.045f),
-            Btn("cl", "◀", COL_YELLOW, K_C_LEFT, R, 0.30f, 0.36f, 0.045f),
-            Btn("cr", "▶", COL_YELLOW, K_C_RIGHT, R, 0.12f, 0.36f, 0.045f),
-            Btn("cd", "▼", COL_YELLOW, K_C_DOWN, R, 0.21f, 0.45f, 0.045f)),
-            dpadSmall, listOf(stickLeft))
+        "n64" -> Layout(listOf(
+            // links: L oben, darunter Stick, darunter Steuerkreuz
+            Btn("l", "L", COL_GRAY, KeyEvent.KEYCODE_BUTTON_L1, L, 0.24f, 0.09f, 0.06f),
+            // rechts: R oben, Z, B / A schräg, C-Tasten unten
+            Btn("r", "R", COL_GRAY, KeyEvent.KEYCODE_BUTTON_R1, R, 0.24f, 0.09f, 0.06f),
+            Btn("z", "Z", COL_PURPLE, KeyEvent.KEYCODE_BUTTON_L2, R, 0.16f, 0.27f, 0.06f),
+            Btn("b", "B", COL_GREEN, KeyEvent.KEYCODE_BUTTON_Y, R, 0.36f, 0.38f, 0.068f),
+            Btn("a", "A", COL_BLUE, KeyEvent.KEYCODE_BUTTON_B, R, 0.20f, 0.48f, 0.068f),
+            Btn("cu", "▲", COL_YELLOW, K_C_UP, R, 0.24f, 0.64f, 0.048f),
+            Btn("cl", "◀", COL_YELLOW, K_C_LEFT, R, 0.335f, 0.74f, 0.048f),
+            Btn("cr", "▶", COL_YELLOW, K_C_RIGHT, R, 0.145f, 0.74f, 0.048f),
+            Btn("cd", "▼", COL_YELLOW, K_C_DOWN, R, 0.24f, 0.84f, 0.048f),
+            // Mitte unten: START
+            Btn("start", "START", COL_GRAY, KeyEvent.KEYCODE_BUTTON_START, Side.CENTER, 0f, 0.93f, 0.045f)),
+            Dpad(L, 0.30f, 0.78f, 0.075f, 0.05f),
+            listOf(Stick(true, L, 0.30f, 0.42f, 0.16f)))
         "gamecube" -> Layout(listOf(start(), lt("L"), rt("R"), rb("Z"),
             faceBottom("A", COL_GREEN), faceLeft("B", COL_RED), faceRight("X", COL_GRAY), faceTop("Y", COL_GRAY)),
             dpadSmall, listOf(stickLeft, stickRightSmall))
