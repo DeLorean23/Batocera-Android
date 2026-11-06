@@ -1,0 +1,54 @@
+// OpenBOR-Engine (BSD-Lizenz, github.com/DCurrent/openbor) als Bibliothek.
+// Der Quellcode wird vom Build-Workflow nach external/openbor geklont.
+// Die mitgelieferten SDL2-/Grafik-Bibliotheken gibt es nur für 64-bit (arm64-v8a).
+plugins {
+    id 'com.android.library'
+}
+
+def ob = rootProject.file('external/openbor/engine/android/app')
+
+android {
+    namespace 'org.openbor.engine'
+    compileSdk 35
+    ndkVersion '21.4.7075529'
+
+    defaultConfig {
+        minSdk 21
+        externalNativeBuild {
+            ndkBuild {
+                abiFilters 'arm64-v8a'
+            }
+        }
+    }
+
+    externalNativeBuild {
+        ndkBuild {
+            path "${ob}/jni/Android.mk"
+        }
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java {
+                srcDirs = ["${ob}/src/main/java"]
+                // Eigener Starter in der App statt Launcher/GameActivity von OpenBOR
+                exclude 'org/openbor/engine/**'
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    lint {
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'org.jetbrains:annotations:16.0.2'
+}

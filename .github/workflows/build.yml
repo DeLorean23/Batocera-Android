@@ -25,7 +25,7 @@ jobs:
         run: |
           SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           yes | "$SDKM" --licenses > /dev/null || true
-          "$SDKM" "cmake;3.22.1" "ndk;26.1.10909125" "build-tools;34.0.0" "platforms;android-33" "platforms;android-35" > /dev/null
+          "$SDKM" "cmake;3.22.1" "ndk;26.1.10909125" "ndk;21.4.7075529" "build-tools;34.0.0" "platforms;android-33" "platforms;android-35" > /dev/null
 
       - name: LibretroDroid holen (Emulator-Kern, GPL-3)
         run: |
@@ -35,6 +35,12 @@ jobs:
           git -C external/libretrodroid apply ../../patches/libretrodroid.patch
           # NDK-Version festlegen
           sed -i 's/compileSdkVersion 33/compileSdkVersion 33\n    ndkVersion "26.1.10909125"/' external/libretrodroid/libretrodroid/build.gradle
+
+      - name: OpenBOR holen (Engine, BSD-Lizenz)
+        run: |
+          git init -q external/openbor
+          git -C external/openbor fetch -q --depth 1 https://github.com/DCurrent/openbor 65a7f0b41aee87fe4084e538634b4ed73236f871
+          git -C external/openbor checkout -q FETCH_HEAD
 
       - name: Libretro-Cores laden
         run: bash scripts/fetch_cores.sh

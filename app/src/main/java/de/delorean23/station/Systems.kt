@@ -147,6 +147,8 @@ object Systems {
             listOf("tzx", "tap", "z80", "rzx", "scl", "trd", "dsk") + cartExt, listOf("fuse"), zipNative = true, hardware = "computer"),
         GameSystem("dos", "Dos (x86)", "Microsoft", 1981,
             listOf("pc", "dos", "zip", "dosz", "exe", "com", "bat", "iso", "cue", "conf", "m3u"), listOf("dosbox_pure"), zipNative = true, hardware = "computer"),
+        GameSystem("openbor", "OpenBOR", "OpenBOR Team", 2004,
+            listOf("pak"), listOf("openbor"), hardware = "engine"),
         GameSystem("scummvm", "ScummVM", "LucasArts", 1987,
             listOf("scummvm"), listOf("scummvm"), hardware = "engine")
     )
@@ -157,7 +159,8 @@ object Systems {
     fun keepsArchive(system: GameSystem): Boolean = system.hardware == "arcade" || system.id == "dos"
 
     fun coreFile(context: Context, core: String): File =
-        File(context.applicationInfo.nativeLibraryDir, "lib${core}_libretro_android.so")
+        if (core == "openbor") File(context.applicationInfo.nativeLibraryDir, "libopenbor.so")
+        else File(context.applicationInfo.nativeLibraryDir, "lib${core}_libretro_android.so")
 
     /** Erster eingebauter Core des Systems, oder null wenn keiner in dieser APK steckt. */
     fun availableCore(context: Context, system: GameSystem): String? =

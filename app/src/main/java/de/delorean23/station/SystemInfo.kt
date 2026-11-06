@@ -18,7 +18,7 @@ object SystemInfo {
         "lynx" to 28, "jaguar" to 27, "wswan" to 45, "wswanc" to 46, "colecovision" to 48,
         "intellivision" to 115, "odyssey2" to 104, "vectrex" to 102, "3do" to 29, "msx1" to 113,
         "msx2" to 116, "amstradcpc" to 65, "c64" to 66, "amiga500" to 64, "x68000" to 79,
-        "zxspectrum" to 76, "dos" to 135, "scummvm" to 123
+        "zxspectrum" to 76, "dos" to 135, "scummvm" to 123, "openbor" to 214
     )
 
     val libretroName: Map<String, String> = mapOf(

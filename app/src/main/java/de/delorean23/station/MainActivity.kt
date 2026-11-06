@@ -165,6 +165,7 @@ class MainActivity : AppCompatActivity(), FrontendView.Listener, InputManager.In
                 view.setSystems(list, cfg.lastSystem)
                 view.statusText = ""
                 view.requestFocus()
+                offerCarbon()
             }.onFailure { e ->
                 view.statusText = ""
                 library = null; systems = emptyList()
@@ -174,6 +175,32 @@ class MainActivity : AppCompatActivity(), FrontendView.Listener, InputManager.In
                     .setMessage("Die Freigabe konnte nicht gelesen werden:\n${e.message}\n\nIm Menü kannst du die Einstellungen prüfen oder auf \"Intern\" umstellen.")
                     .setPositiveButton("Menü") { _, _ -> onMenu() }
                     .setNegativeButton("Nochmal") { _, _ -> reload() }.create(), cfg).show()
+            }
+        }
+    }
+
+    private var carbonAsked = false
+
+    /** Erster Start ohne Theme: Carbon herunterladen (wie bei Batocera Standard) */
+    private fun offerCarbon() {
+        if (carbonAsked) return
+        val hasTheme = cfg.themesDir.listFiles()?.any { File(it, "theme.xml").isFile } == true
+        if (hasTheme) return
+        carbonAsked = true
+        Ui.confirm(this, cfg, "Carbon-Theme", "Es ist noch kein Theme installiert. Das Carbon-Theme (Standard bei Batocera) jetzt herunterladen? Das sind ungefähr 150 MB.", "Herunterladen") {
+            val t = ThemeDownloader.ThemeInfo("es-theme-carbon", "https://github.com/fabricecaruso/es-theme-carbon", "Fabrice Caruso", 0, "")
+            val dlg = Ui.message(this, cfg, "Carbon-Theme", "Lade Carbon …")
+            lifecycleScope.launch {
+                val err = withContext(Dispatchers.IO) {
+                    try {
+                        cfg.themesDir.mkdirs()
+                        ThemeDownloader.install(t, cfg.themesDir) { p -> runOnUiThread { dlg.setMessage(p) } }
+                        null
+                    } catch (e: Exception) { e.message ?: e.javaClass.simpleName }
+                }
+                dlg.dismiss()
+                if (err != null) Ui.message(this@MainActivity, cfg, "Carbon-Theme", "Download fehlgeschlagen: $err\n\nDu kannst es später im Menü → Theme-Einstellungen → Themes herunterladen holen.")
+                else { cfg.theme = "es-theme-carbon"; cfg.colorset = ""; lastConfigStamp = ""; reload() }
             }
         }
     }
@@ -241,6 +268,11 @@ class MainActivity : AppCompatActivity(), FrontendView.Listener, InputManager.In
             view.statusText = ""
             file.onSuccess { f ->
                 lastLaunched = game
+                if (sys.id == "openbor") {
+                    // eingebaute OpenBOR-Engine (eigene Activity, nur 64-bit)
+                    startActivity(Intent().setClassName(packageName, "$packageName.OpenBorActivity").putExtra("pak", f.absolutePath))
+                    return@onSuccess
+                }
                 val i = Intent(this@MainActivity, GameActivity::class.java)
                     .putExtra(GameActivity.EXTRA_CORE, core)
                     .putExtra(GameActivity.EXTRA_ROM, f.absolutePath)

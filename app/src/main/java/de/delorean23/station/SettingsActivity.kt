@@ -76,6 +76,7 @@ class SettingsActivity : AppCompatActivity() {
         item("Steuerung", "") { show("controls") }
         item("Emulatoren & Bild", "") { show("emulators") }
         item("Scraper", if (cfg.scrapeSource == "libretro") "Libretro-Cover" else "ScreenScraper") { show("scraper") }
+        item("Content-Downloader", "freie Spiele") { contentDownloader() }
         item("Netplay: Spiel beitreten", "") { MainActivity.pendingJoin = true; finish() }
         item("Fehlende BIOS prüfen", "") { biosCheck() }
         item("System & Updates", "Build ${BuildConfig.BUILD_NUMBER}") { show("system") }
@@ -241,6 +242,55 @@ class SettingsActivity : AppCompatActivity() {
             sb.append("\nHinweis: Bei manchen Systemen reicht eine der Dateien (z. B. PlayStation).")
             sb.append("\n\nDie Liste steht auch in ${cfg.biosDir.path}/fehlende_bios.txt")
             message("Fehlende BIOS", sb.toString())
+        }
+    }
+
+    private fun contentDownloader() {
+        val wait = message("Content-Downloader", "Lade Liste aus dem Batocera-Store …")
+        lifecycleScope.launch {
+            val installed = Systems.installedSystems(this@SettingsActivity).map { it.id }.toSet()
+            val r = withContext(Dispatchers.IO) { try { Result.success(Store.list(installed)) } catch (e: Exception) { Result.failure<List<Store.Package>>(e) } }
+            wait.dismiss()
+            r.onFailure { message("Content-Downloader", "Liste konnte nicht geladen werden: ${it.message}") }
+            r.onSuccess { pkgs ->
+                if (pkgs.isEmpty()) { message("Content-Downloader", "Keine passenden Spiele gefunden."); return@onSuccess }
+                val bySystem = pkgs.groupBy { it.system }
+                val systems = bySystem.keys.toList()
+                val names = systems.map { id -> "${Systems.byId(id)?.name ?: id}  (${bySystem[id]!!.size})" }
+                Ui.list(this@SettingsActivity, cfg, "Content-Downloader", names) { i -> storeSystem(bySystem[systems[i]]!!) }
+            }
+        }
+    }
+
+    private fun storeSystem(pkgs: List<Store.Package>) {
+        val names = pkgs.map { p ->
+            (if (Store.isInstalled(cfg, p)) "✓ " else "") + p.title + "  (%.1f MB)".format(p.size / 1048576.0)
+        }
+        Ui.list(this, cfg, Systems.byId(pkgs.first().system)?.name ?: "Spiele", names) { i ->
+            val p = pkgs[i]
+            val inst = Store.isInstalled(cfg, p)
+            val text = (if (p.info.isNotEmpty()) p.info + "\n\n" else "") + "Version ${p.version}\nGröße: %.1f MB".format(p.size / 1048576.0) +
+                (if (p.url.isNotEmpty()) "\n${p.url}" else "")
+            Ui.confirm(this, cfg, p.title, text, if (inst) "Entfernen" else "Installieren") {
+                if (inst) {
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO) { try { Store.uninstall(cfg, p) } catch (_: Exception) {} }
+                        MainActivity.scrapeStamp = System.currentTimeMillis().toString()
+                        message("Content-Downloader", "${p.title} wurde entfernt.")
+                    }
+                } else {
+                    val dlg = message("Content-Downloader", "Lade ${p.title} …")
+                    lifecycleScope.launch {
+                        val err = withContext(Dispatchers.IO) {
+                            try { cfg.ensureFolders(); Store.install(cfg, p) { t -> runOnUiThread { dlg.setMessage(t) } }; null }
+                            catch (e: Exception) { e.message ?: e.javaClass.simpleName }
+                        }
+                        dlg.dismiss()
+                        MainActivity.scrapeStamp = System.currentTimeMillis().toString()
+                        message("Content-Downloader", err?.let { "Fehler: $it" } ?: "${p.title} ist installiert und erscheint in der Spieleliste.")
+                    }
+                }
+            }
         }
     }
 

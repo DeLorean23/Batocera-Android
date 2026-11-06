@@ -19,3 +19,9 @@ include ':app'
 // Emulator-Kern (LibretroDroid, GPL-3). Wird vom Build-Workflow nach external/ geklont.
 include ':libretrodroid'
 project(':libretrodroid').projectDir = file('external/libretrodroid/libretrodroid')
+
+// OpenBOR-Engine (BSD). Wird vom Build-Workflow nach external/openbor geklont.
+if (file('external/openbor/engine/android/app/jni/Android.mk').exists()) {
+    include ':openbor'
+    project(':openbor').projectDir = file('openbor-module')
+}

@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
@@ -51,6 +52,15 @@
             android:configChanges="orientation|screenSize|screenLayout|keyboard|keyboardHidden|navigation|uiMode"
             android:process=":game"
             android:screenOrientation="sensorLandscape" />
+
+        <!-- OpenBOR-Engine (nur in der 64-bit-APK enthalten) -->
+        <activity
+            android:name=".OpenBorActivity"
+            android:exported="false"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|navigation|uiMode"
+            android:process=":openbor"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@style/StationTheme" />
 
         <activity
             android:name=".ScrapeActivity"
