@@ -1,0 +1,8 @@
+.gradle/
+build/
+local.properties
+.idea/
+*.iml
+external/
+app/src/main/jniLibs/
+cores-report.txt
